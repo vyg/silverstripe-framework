@@ -3413,8 +3413,18 @@ class DataObject extends ViewableData implements DataObjectInterface, i18nEntity
 
 			foreach ($sort as $value) {
 				$value = trim($value);
-				if(preg_match('/^(.*)(asc|desc)$/i', $value, $matches)) {
-					$column = trim($matches[1]);
+				if (preg_match_all('/"(.*)"|(.*)/', $value, $matches)) {
+					foreach ($matches as $match) {
+						if ($match[0]) {
+							$column = $match[0];
+							break;
+						} elseif ($match[1]) {
+							$column = $match[1];
+							break;
+						} else {
+							break(2);
+						}
+					}
 				} else {
 					$column = $value;
 				}
