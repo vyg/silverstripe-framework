@@ -3387,6 +3387,7 @@ class DataObject extends ViewableData implements DataObjectInterface, i18nEntity
 	public function databaseIndexes() {
 		$has_one = $this->uninherited('has_one',true);
 		$classIndexes = $this->uninherited('indexes',true);
+		$sort = $this->uninherited('default_sort',true);
 		//$fileIndexes = $this->uninherited('fileIndexes', true);
 
 		$indexes = array();
@@ -3400,6 +3401,32 @@ class DataObject extends ViewableData implements DataObjectInterface, i18nEntity
 		if($classIndexes) {
 			foreach($classIndexes as $indexName => $indexType) {
 				$indexes[$indexName] = $indexType;
+			}
+		}
+
+		if ($sort && is_string($sort)) {
+			if(strpos($sort, "(") !== false) {
+				$sort = preg_split("/,(?![^()]*+\\))/", $sort);
+			} else {
+				$sort = explode(",", $sort);
+			}
+
+			foreach ($sort as $value) {
+				$value = trim($value);
+				if(preg_match('/^(.*)(asc|desc)$/i', $value, $matches)) {
+					$column = trim($matches[1]);
+				} else {
+					$column = $value;
+				}
+				if (substr($column, 0, 1) === '"') {
+					$column = substr($column, 1, strlen($column)-1);
+				}
+				if (substr($column, -1, 1) === '"') {
+					$column = substr($column, 0, -1);
+				}
+				if (!array_key_exists($column, $indexes)) {
+					$indexes[$column] = true;
+				}
 			}
 		}
 
