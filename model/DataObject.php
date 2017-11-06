@@ -3434,7 +3434,7 @@ class DataObject extends ViewableData implements DataObjectInterface, i18nEntity
 				if (substr($column, -1, 1) === '"') {
 					$column = substr($column, 0, -1);
 				}
-				if (!array_key_exists($column, $indexes)) {
+				if ($this->hasOwnTableDatabaseField($column) && !array_key_exists($column, $indexes)) {
 					$indexes[$column] = true;
 				}
 			}
