@@ -57,6 +57,21 @@ class GroupedDropdownField extends DropdownField {
 
 	public function Field($properties = array()) {
 		$options = array();
+
+		if ($this->getHasEmptyDefault()) {
+			$selected = ($this->value === '' || $this->value === null);
+			$disabled = (in_array('', $this->disabledItems, true)) ? 'disabled' : false;
+			$title = $this->getEmptyString();
+
+			$options[] = array(
+				'Value' => null,
+				'Disabled' => $disabled,
+				'Title' => $title,
+				'Selected' => $selected
+			);
+
+		}
+
 		foreach($this->getSource() as $valueOrGroupTitle => $titleOrGroup) {
 			// Option group
 			if(is_array($titleOrGroup)) {
@@ -130,6 +145,10 @@ class GroupedDropdownField extends DropdownField {
 				} elseif($this->value == $value && !in_array($this->value, $disabled)) {
 					$valid = true;
 				}
+			}
+			// Check to see if we have an empty value and the selected option matches our empty string
+			if ($this->getHasEmptyDefault() && $this->value == $this->getEmptyString()) {
+				$valid = true;
 			}
 		} elseif ($this->getHasEmptyDefault()) {
 			$valid = true;
